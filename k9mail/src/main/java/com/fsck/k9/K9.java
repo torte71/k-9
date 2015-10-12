@@ -168,6 +168,7 @@ public class K9 extends Application {
     private static boolean mAnimations = true;
 
     private static boolean mConfirmDelete = false;
+    private static boolean mConfirmDiscardMessage = true;
     private static boolean mConfirmDeleteStarred = false;
     private static boolean mConfirmSpam = false;
     private static boolean mConfirmDeleteFromNotification = true;
@@ -237,6 +238,7 @@ public class K9 extends Application {
     private static boolean mHideSpecialAccounts = false;
     private static boolean mAutofitWidth;
     private static boolean mQuietTimeEnabled = false;
+    private static boolean mNotificationDuringQuietTimeEnabled = true;
     private static String mQuietTimeStarts = null;
     private static String mQuietTimeEnds = null;
     private static String mAttachmentDefaultPath = "";
@@ -309,31 +311,6 @@ public class K9 extends Application {
     public static final int MAIL_SERVICE_WAKE_LOCK_TIMEOUT = 60000;
 
     public static final int BOOT_RECEIVER_WAKE_LOCK_TIMEOUT = 60000;
-
-    /**
-     * Time the LED is on/off when blinking on new email notification
-     */
-    public static final int NOTIFICATION_LED_ON_TIME = 500;
-    public static final int NOTIFICATION_LED_OFF_TIME = 2000;
-
-    public static final boolean NOTIFICATION_LED_WHILE_SYNCING = false;
-    public static final int NOTIFICATION_LED_FAST_ON_TIME = 100;
-    public static final int NOTIFICATION_LED_FAST_OFF_TIME = 100;
-
-
-    public static final int NOTIFICATION_LED_BLINK_SLOW = 0;
-    public static final int NOTIFICATION_LED_BLINK_FAST = 1;
-
-
-
-    public static final int NOTIFICATION_LED_FAILURE_COLOR = 0xffff0000;
-
-    // Must not conflict with an account number
-    public static final int FETCHING_EMAIL_NOTIFICATION      = -5000;
-    public static final int SEND_FAILED_NOTIFICATION      = -1500;
-    public static final int CERTIFICATE_EXCEPTION_NOTIFICATION_INCOMING = -2000;
-    public static final int CERTIFICATE_EXCEPTION_NOTIFICATION_OUTGOING = -2500;
-    public static final int CONNECTIVITY_ID = -3;
 
 
     public static class Intents {
@@ -474,6 +451,7 @@ public class K9 extends Application {
         editor.putBoolean("useVolumeKeysForListNavigation", mUseVolumeKeysForListNavigation);
         editor.putBoolean("autofitWidth", mAutofitWidth);
         editor.putBoolean("quietTimeEnabled", mQuietTimeEnabled);
+        editor.putBoolean("notificationDuringQuietTimeEnabled", mNotificationDuringQuietTimeEnabled);
         editor.putString("quietTimeStarts", mQuietTimeStarts);
         editor.putString("quietTimeEnds", mQuietTimeEnds);
 
@@ -504,6 +482,7 @@ public class K9 extends Application {
         editor.putBoolean("fixedMessageViewTheme", useFixedMessageTheme);
 
         editor.putBoolean("confirmDelete", mConfirmDelete);
+        editor.putBoolean("confirmDiscardMessage", mConfirmDiscardMessage);
         editor.putBoolean("confirmDeleteStarred", mConfirmDeleteStarred);
         editor.putBoolean("confirmSpam", mConfirmSpam);
         editor.putBoolean("confirmDeleteFromNotification", mConfirmDeleteFromNotification);
@@ -708,6 +687,7 @@ public class K9 extends Application {
         mAutofitWidth = sprefs.getBoolean("autofitWidth", true);
 
         mQuietTimeEnabled = sprefs.getBoolean("quietTimeEnabled", false);
+        mNotificationDuringQuietTimeEnabled = sprefs.getBoolean("notificationDuringQuietTimeEnabled", true);
         mQuietTimeStarts = sprefs.getString("quietTimeStarts", "21:00");
         mQuietTimeEnds = sprefs.getString("quietTimeEnds", "7:00");
 
@@ -724,6 +704,7 @@ public class K9 extends Application {
         mHideTimeZone = sprefs.getBoolean("hideTimeZone", false);
 
         mConfirmDelete = sprefs.getBoolean("confirmDelete", false);
+        mConfirmDiscardMessage = sprefs.getBoolean("confirmDiscardMessage", true);
         mConfirmDeleteStarred = sprefs.getBoolean("confirmDeleteStarred", false);
         mConfirmSpam = sprefs.getBoolean("confirmSpam", false);
         mConfirmDeleteFromNotification = sprefs.getBoolean("confirmDeleteFromNotification", true);
@@ -970,6 +951,14 @@ public class K9 extends Application {
         mQuietTimeEnabled = quietTimeEnabled;
     }
 
+    public static boolean isNotificationDuringQuietTimeEnabled() {
+        return mNotificationDuringQuietTimeEnabled;
+    }
+
+    public static void setNotificationDuringQuietTimeEnabled(boolean notificationDuringQuietTimeEnabled) {
+        mNotificationDuringQuietTimeEnabled = notificationDuringQuietTimeEnabled;
+    }
+
     public static String getQuietTimeStarts() {
         return mQuietTimeStarts;
     }
@@ -1182,8 +1171,16 @@ public class K9 extends Application {
         return mConfirmSpam;
     }
 
+    public static boolean confirmDiscardMessage() {
+        return mConfirmDiscardMessage;
+    }
+
     public static void setConfirmSpam(final boolean confirm) {
         mConfirmSpam = confirm;
+    }
+
+    public static void setConfirmDiscardMessage(final boolean confirm) {
+        mConfirmDiscardMessage = confirm;
     }
 
     public static boolean confirmDeleteFromNotification() {
